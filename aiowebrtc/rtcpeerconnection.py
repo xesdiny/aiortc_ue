@@ -20,12 +20,20 @@ class RTCPeerConnection:
         return self.__iceGatheringState
 
     async def createAnswer(self):
+        """
+        Create an SDP answer to an offer received from a remote peer during
+        the offer/answer negotiation of a WebRTC connection.
+        """
         return {
             'sdp': self.__createSdp(),
             'type': 'answer',
         }
 
     async def createOffer(self):
+        """
+        Create an SDP offer for the purpose of starting a new WebRTC
+        connection to a remote peer.
+        """
         self.__iceConnection = aioice.Connection(ice_controlling=True)
         self.__iceGatheringState = 'gathering'
         await self.__iceConnection.gather_candidates()
