@@ -74,13 +74,28 @@ class RTCPeerConnection:
             't=0 0',
         ]
 
+        default_candidate = self.__iceConnection.get_default_candidate(1)
         sdp += [
-            'c=IN IP4 0.0.0.0',
+            # FIXME: negotiate codec
+            'm=audio %d UDP/TLS/RTP/SAVPF 0' % default_candidate.port,
+            'c=IN IP4 %s' % default_candidate.host,
+            'a=rtcp:9 IN IP4 0.0.0.0',
         ]
+
         for candidate in self.__iceConnection.local_candidates:
             sdp += ['a=candidate:%s' % candidate.to_sdp()]
         sdp += [
             'a=ice-pwd:%s' % self.__iceConnection.local_password,
             'a=ice-ufrag:%s' % self.__iceConnection.local_username,
         ]
+        if self.__iceConnection.ice_controlling:
+            sdp += ['a=setup:actpass']
+        else:
+            sdp += ['a=setup:active']
+        sdp += ['a=sendrecv']
+        sdp += ['a=rtcp-mux']
+
+        # FIXME: negotiate codec
+        sdp += ['a=rtpmap:0 PCMU/8000']
+
         return '\r\n'.join(sdp) + '\r\n'
