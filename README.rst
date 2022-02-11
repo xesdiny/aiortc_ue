@@ -1,5 +1,4 @@
 aiortc
-======
 
 |rtd| |pypi-v| |pypi-pyversions| |pypi-l| |tests| |codecov| |gitter|
 
