@@ -126,6 +126,18 @@ On OS X run:
 
     brew install ffmpeg opus libvpx pkg-config
 
+
+Windows
+....
+
+On Windows by setup:
+
+refer to `this`_.
+
+.. _this: https://github.com/aiortc/aiortc/issues/50#issuecomment-487478284
+
+....
+
 License
 -------
 

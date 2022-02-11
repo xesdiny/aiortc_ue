@@ -1450,6 +1450,7 @@ a=rtpmap:0 PCMU/8000
         pc2 = RTCPeerConnection()
         pc2_states = track_states(pc2)
 
+<<<<<<< HEAD
         self.assertEqual(pc1.iceConnectionState, "new")
         self.assertEqual(pc1.iceGatheringState, "new")
         self.assertIsNone(pc1.localDescription)
@@ -1457,6 +1458,15 @@ a=rtpmap:0 PCMU/8000
 
         self.assertEqual(pc2.iceConnectionState, "new")
         self.assertEqual(pc2.iceGatheringState, "new")
+=======
+        self.assertEqual(pc1.iceConnectionState, 'new')
+        self.assertEqual(pc1.iceGatheringState, 'new')
+        self.assertIsNone(pc1.localDescription)
+        self.assertIsNone(pc1.remoteDescription)
+
+        self.assertEqual(pc2.iceConnectionState, 'new')
+        self.assertEqual(pc2.iceGatheringState, 'new')
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
         self.assertIsNone(pc2.localDescription)
         self.assertIsNone(pc2.remoteDescription)
 
@@ -1485,7 +1495,12 @@ a=rtpmap:0 PCMU/8000
         self.assertEqual(len(pc2.getTransceivers()), 1)
         self.assertEqual(mids(pc2), ["0"])
 
+        # handle offer
+        run(pc2.setRemoteDescription(pc1.localDescription))
+        self.assertEqual(pc2.remoteDescription, pc1.localDescription)
+
         # create answer
+<<<<<<< HEAD
         answer = await pc2.createAnswer()
         self.assertEqual(answer.type, "answer")
         self.assertTrue("m=audio " in answer.sdp)
@@ -1507,6 +1522,18 @@ a=rtpmap:0 PCMU/8000
         self.assertEqual(pc1.remoteDescription, pc2.localDescription)
         self.assertEqual(pc1.getTransceivers()[0].currentDirection, "sendonly")
         self.assertEqual(pc1.getTransceivers()[0].direction, "sendonly")
+=======
+        answer = run(pc2.createAnswer())
+        run(pc2.setLocalDescription(answer))
+        self.assertEqual(pc2.iceConnectionState, 'checking')
+        self.assertEqual(pc2.iceGatheringState, 'complete')
+        self.assertEqual(answer['type'], 'answer')
+
+        # handle answer
+        run(pc1.setRemoteDescription(pc2.localDescription))
+        self.assertEqual(pc1.remoteDescription, pc2.localDescription)
+        self.assertEqual(pc1.iceConnectionState, 'checking')
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
 
         # check outcome
         await self.assertIceCompleted(pc1, pc2)

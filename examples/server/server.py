@@ -163,6 +163,7 @@ async def offer(request):
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
 
+<<<<<<< HEAD
     return web.Response(
         content_type="application/json",
         text=json.dumps(
@@ -198,6 +199,10 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+=======
+    return web.Response(content_type='application/json',
+                        text=json.dumps(pc.localDescription))
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
 
     if args.cert_file:
         ssl_context = ssl.SSLContext()

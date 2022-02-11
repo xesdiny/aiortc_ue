@@ -13,12 +13,39 @@ def get_ntp_seconds():
 class RTCPeerConnection:
     def __init__(self):
         self.__iceConnection = None
+<<<<<<< HEAD
+=======
+
+        self.__iceConnectionState = 'new'
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
         self.__iceGatheringState = 'new'
+
+        self.__currentLocalDescription = None
+        self.__currentRemoteDescription = None
 
     @property
     def iceGatheringState(self):
         return self.__iceGatheringState
 
+<<<<<<< HEAD
+=======
+    @property
+    def localDescription(self):
+        return self.__currentLocalDescription
+
+    @property
+    def remoteDescription(self):
+        return self.__currentRemoteDescription
+
+    async def close(self):
+        """
+        Terminate the ICE agent, ending ICE processing and streams.
+        """
+        if self.__iceConnection is not None:
+            await self.__iceConnection.close()
+            self.__setIceConnectionState('closed')
+
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
     async def createAnswer(self):
         """
         Create an SDP answer to an offer received from a remote peer during
@@ -45,7 +72,7 @@ class RTCPeerConnection:
         }
 
     async def setLocalDescription(self, sessionDescription):
-        pass
+        self.__currentLocalDescription = sessionDescription
 
     async def setRemoteDescription(self, sessionDescription):
         if self.__iceConnection is None:
@@ -63,7 +90,26 @@ class RTCPeerConnection:
                     self.__iceConnection.remote_username = value
                 elif attr == 'ice-pwd':
                     self.__iceConnection.remote_password = value
+<<<<<<< HEAD
         asyncio.ensure_future(self.__iceConnection.connect())
+=======
+
+        if self.__iceConnection.remote_candidates and self.iceConnectionState == 'new':
+            asyncio.ensure_future(self.__connect())
+
+        self.__currentRemoteDescription = sessionDescription
+
+    async def __connect(self):
+        self.__setIceConnectionState('checking')
+        await self.__iceConnection.connect()
+        await self.__dtlsSession.connect()
+        self.__setIceConnectionState('completed')
+
+    async def __gather(self):
+        self.__setIceGatheringState('gathering')
+        await self.__iceConnection.gather_candidates()
+        self.__setIceGatheringState('complete')
+>>>>>>> 28bd646 ([rtcpeerconnection] add localDescription and remoteDescription)
 
     def __createSdp(self):
         ntp_seconds = get_ntp_seconds()
