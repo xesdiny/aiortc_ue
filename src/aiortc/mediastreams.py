@@ -11,7 +11,6 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 AUDIO_PTIME = 0.020  # 20ms audio packetization
 VIDEO_CLOCK_RATE = 90000
-VIDEO_PTIME = 1 / 30  # 30fps
 VIDEO_TIME_BASE = fractions.Fraction(1, VIDEO_CLOCK_RATE)
 
 
@@ -116,12 +115,19 @@ class VideoStreamTrack(MediaStreamTrack):
     _start: float
     _timestamp: int
 
+    def __init__(self, fps=None) -> None:
+        super().__init__()
+        if fps:
+            self.video_ptime = 1 / fps  # 30fps
+        else:
+            self.video_ptime = 1 / 30  # fps
+
     async def next_timestamp(self) -> Tuple[int, fractions.Fraction]:
         if self.readyState != "live":
             raise MediaStreamError
 
         if hasattr(self, "_timestamp"):
-            self._timestamp += int(VIDEO_PTIME * VIDEO_CLOCK_RATE)
+            self._timestamp += int(self.video_ptime * VIDEO_CLOCK_RATE)
             wait = self._start + (self._timestamp / VIDEO_CLOCK_RATE) - time.time()
             await asyncio.sleep(wait)
         else:
